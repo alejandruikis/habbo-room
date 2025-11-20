@@ -24,15 +24,35 @@ def draw_iso_tile(surface, x, y, tile_width, tile_height, color):
 
 def draw_iso_wall_left(surface, x, y, tile_width, tile_height, color):
     wall_height = tile_height * 2
-    
+
     points = [
         (x, y),
         (x - tile_width // 2, y + tile_height // 2),
         (x - tile_width // 2, y + tile_height // 2 + wall_height),
         (x, y + wall_height)
     ]
-    
+
+    bx = x - 6
+    by = y - 6
+
+    top_points = [
+        (bx, by), # top point
+        (bx - tile_width // 2, by + tile_height // 2), # left point
+        (bx - tile_width // 2 + 6, by + tile_height // 2 + 6), # bottom left point
+        (bx + 6, by + 6) # bottom point
+    ]
+
+    left_side_points = [
+        (bx - tile_width // 2, by + tile_height // 2), # top left
+        (bx - tile_width // 2 + 5, by + tile_height // 2), # top right
+        (bx - tile_width // 2 + 5, by + tile_height // 2 + wall_height + 10), # bottom right
+        (bx - tile_width // 2, by + tile_height // 2 + wall_height + 6.5) # bottom left
+    ]
+
+    pygame.draw.polygon(surface, (255, 255, 255), left_side_points)
+    pygame.draw.polygon(surface, (152, 152, 152), top_points)
     pygame.draw.polygon(surface, color, points)
+
 
 def draw_iso_wall_top(surface, x, y, tile_width, tile_height, color):
     wall_height = tile_height * 2
@@ -43,7 +63,24 @@ def draw_iso_wall_top(surface, x, y, tile_width, tile_height, color):
         (x + tile_width // 2, y + tile_height // 2 + wall_height),
         (x, y + wall_height)
     ]
+    bx = x + 6
+    by = y - 6
+
+    top_points = [
+        (bx, by),   
+        (bx + tile_width // 2, by + tile_height // 2),     
+        (bx + tile_width // 2 - 6, by + tile_height // 2 + 6),  
+        (bx - 6, by + 6)                                   
+    ]
     
+    right_side_points = [
+        (bx + tile_width // 2, by + tile_height // 2),                    
+        (bx + tile_width // 2 - 5, by + tile_height // 2),
+        (bx + tile_width // 2 - 5, by + tile_height // 2 + wall_height + 10),  
+        (bx + tile_width // 2, by + tile_height // 2 + wall_height + 6.5)      
+    ]
+    pygame.draw.polygon(surface, (203, 203, 203), right_side_points)
+    pygame.draw.polygon(surface, (152, 152, 152), top_points)
     pygame.draw.polygon(surface, color, points)
     pygame.draw.polygon(surface, color, points, 2)
 
@@ -129,7 +166,6 @@ def create_room(tilemap = None):
                                            (112, 112, 61))
             
 
-
             
 def convert_tilemap(tilemap):
     def to_tile_type(ch):
@@ -160,5 +196,7 @@ while running:
     # Render
     screen.fill((0, 0, 0))
     create_room(None)
+
+
     pygame.display.flip()
     clock.tick(60)

@@ -22,7 +22,7 @@ def draw_iso_tile(surface, x, y, tile_width, tile_height, color):
 
     pygame.draw.polygon(surface, color, points)
     # Draw border  
-    pygame.draw.polygon(surface, (100, 100, 100), points, 2)
+    pygame.draw.polygon(surface, (87, 87, 87), points, 2)
 
 def draw_iso_wall_left(surface, x, y, tile_width, tile_height, color):
     wall_height = tile_height * 2
@@ -35,7 +35,7 @@ def draw_iso_wall_left(surface, x, y, tile_width, tile_height, color):
     ]
     
     pygame.draw.polygon(surface, color, points)
-    pygame.draw.polygon(surface, (100, 100, 100), points, 2)
+    pygame.draw.polygon(surface, (203, 203, 203), points, 2)
 
 def draw_iso_wall_top(surface, x, y, tile_width, tile_height, color):
     wall_height = tile_height * 2
@@ -48,7 +48,7 @@ def draw_iso_wall_top(surface, x, y, tile_width, tile_height, color):
     ]
     
     pygame.draw.polygon(surface, color, points)
-    pygame.draw.polygon(surface, (100, 100, 100), points, 2)
+    pygame.draw.polygon(surface, color, points, 2)
 
 def create_room(tilemap = None):
     tile_width = 128
@@ -73,22 +73,23 @@ def create_room(tilemap = None):
             iso_x, iso_y = grid_to_iso(x, y, tile_width, tile_height)
             
             if tile == 1:
-                color = (80, 80, 80)
+                colorLeft = (203, 203, 203)
+                colorTop = (255, 255, 255)
                 
                 if x + 1 < len(row) and row[x + 1] == 0:
                     draw_iso_wall_left(screen, 
                                      iso_x + offset_x + tile_width // 2,   
                                      iso_y + offset_y - tile_height - (tile_height // 2),
-                                     tile_width, tile_height, color)
+                                     tile_width, tile_height, colorLeft)
                 
                 if y + 1 < len(converted_tilemap) and converted_tilemap[y + 1][x] == 0:
                     draw_iso_wall_top(screen, 
                                       iso_x + offset_x - tile_width // 2,   
                                       iso_y + offset_y - tile_height - (tile_height // 2),
-                                      tile_width, tile_height, color)
+                                      tile_width, tile_height, colorTop)
                     
             elif tile == 0:
-                color = (200, 200, 180)
+                color = (152, 152, 101)
                 draw_iso_tile(screen, iso_x + offset_x, iso_y + offset_y, 
                               tile_width, tile_height, color)
 
@@ -120,7 +121,7 @@ while running:
     # ...
     
     # Render
-    screen.fill((255, 255, 255))
+    screen.fill((0, 0, 0))
     create_room(None)
     pygame.display.flip()
     clock.tick(60)

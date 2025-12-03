@@ -1,5 +1,5 @@
 import os
-from data.furniture_asset import FurnitureAsset
+from src.data.furniture_asset import FurnitureAsset
 import definitions
 from bs4 import BeautifulSoup
 import pygame
@@ -15,19 +15,20 @@ class FurnitureExtractor:
     
     def __set_path(self, furniture_type: str):
         self.path = os.path.join(self.path, f"{furniture_type}/")
+        self.xml_path = os.path.join(self.path, self.xml_path)
     
     def __load_furniture_manifest_xml(self) -> BeautifulSoup:
-        with open(os.path.join(self.path, f"{self.xml_path}manifest.xml"), "r", encoding="utf-8") as file:
+        with open(os.path.join(self.path, f"{self.xml_path}{self.furniture_type}_manifest.xml"), "r", encoding="utf-8") as file:
             content = file.read()
         return BeautifulSoup(content, "xml")
     
     def __load_furniture_asset_xml(self) -> BeautifulSoup:
-        with open(os.path.join(self.path, f"{self.xml_path}assets.xml"), "r", encoding="utf-8") as file:
+        with open(os.path.join(self.path, f"{self.xml_path}{self.furniture_type}_assets.xml"), "r", encoding="utf-8") as file:
             content = file.read()
         return BeautifulSoup(content, "xml")
     
     def __load_furniture_visualization_xml(self) -> BeautifulSoup:
-        with open(os.path.join(self.path, f"{self.xml_path}visualization.xml"), "r", encoding="utf-8") as file:
+        with open(os.path.join(self.path, f"{self.xml_path}{self.furniture_type}_visualization.xml"), "r", encoding="utf-8") as file:
             content = file.read()
         return BeautifulSoup(content, "xml")
     
@@ -35,13 +36,14 @@ class FurnitureExtractor:
         # Check if furniture has assets and visualization xml
         if soup.find("asset", {"name": f"{self.furniture_type}_visualization"}) is None:
             return False
+        
         if soup.find("asset", {"name": f"{self.furniture_type}_assets"}) is None:
             return False
+        
         return True
     
     def extract(self) -> dict[str, FurnitureAsset]:
         
-        # 1. Lade XMLs
         manifest_xml = self.__load_furniture_manifest_xml()
         
         if not self.__is_manifest_valid(manifest_xml):
@@ -66,7 +68,6 @@ class FurnitureExtractor:
                 sprite = pygame.image.load(png_path).convert_alpha()
             
             furniture_asset = FurnitureAsset(
-                name=name,
                 flip_h=flip_h,
                 type=self.furniture_type,
                 offset_x=offset_x,
@@ -76,6 +77,6 @@ class FurnitureExtractor:
             )
             
             assets_dict[name] = furniture_asset
-        
+
         return assets_dict
     

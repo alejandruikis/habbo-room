@@ -16,10 +16,4 @@ class FurnitureExtractor:
 
     
 
-
-with open(manifest_path, "r") as f:
-    data = f.read()
-
-bs_data = BeautifulSoup(data, "xml")
-
-print(bs_data)
+    

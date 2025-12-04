@@ -1,5 +1,3 @@
-import pygame
-
 from src.data.furniture_asset import FurnitureAsset
 from src.utils.xml_layer import get_layer_id_from_letter
 

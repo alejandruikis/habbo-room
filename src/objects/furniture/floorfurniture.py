@@ -1,25 +1,30 @@
 # floorfurniture.py
 import pygame
+
+from src.objects.room import room_config
 import src.objects.room.room as room
 
-def add_floor_furniture(surface: pygame.Surface, grid_position: tuple[int, int], type: str):
+from dataclasses import dataclass, field
 
-    room_size = 64
-    
+from src.utils.iso_utils import IsoUtils
 
-    grid_x, grid_y = grid_position
-    
-    tile_width = 128
-    tile_height = 64
-    offset_x = 400
-    offset_y = 100
-    
-    iso_x, iso_y = room.grid_to_iso(grid_x, grid_y, tile_width, tile_height)
 
-    screen_x = iso_x + offset_x
-    screen_y = iso_y + offset_y
-    
+@dataclass
+class FloorFurniture:
+    roomX: int
+    roomY: int
+    roomZ: int
+    direction: int
+    type: str
 
-export = {
-    "add_floor_furniture": add_floor_furniture
-}
+    __screen_x: int = field(init=False)
+    __screen_y: int = field(init=False)
+
+    def __post_init__(self):
+
+        iso_x, iso_y = IsoUtils.grid_to_iso(self.roomX, self.roomY)
+
+        self.__screen_x = iso_x + room_config.OFFSET_X
+        self.__screen_y = iso_y + room_config.OFFSET_Y
+
+

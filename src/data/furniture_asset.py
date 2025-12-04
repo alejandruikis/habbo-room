@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class FurnitureAsset:
-    name: str  # ← WICHTIG: Hinzufügen!
+    name: str
     flip_h: bool = False
     type: str = ""
     offset_x: int = 0

@@ -1,28 +1,30 @@
-from src.data.furniture import Furniture
+from src.objects.furniture.furniture import Furniture
 from src.data.furniture_extractor import FurnitureExtractor
 
 
 class FurnitureRegistry:
     
-    _instance = None
-    _furniture_cache: dict[str, Furniture] = {}
+    __instance = None
+    __furniture_cache: dict[str, Furniture] = {}
     
     def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-        return cls._instance
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+        return cls.__instance
     
     @classmethod
     def load_furniture(cls, furniture_type: str) -> Furniture:
-        if furniture_type in cls._furniture_cache:
+        if furniture_type in cls.__furniture_cache:
             print(f"{furniture_type} from cache")
-            return cls._furniture_cache[furniture_type]
+            return cls.__furniture_cache[furniture_type]
         
+        print(f"Create new furniture: {furniture_type}")
+
         extractor = FurnitureExtractor(furniture_type)
         furniture = extractor.extract()
-        
+
         if furniture:
-            cls._furniture_cache[furniture_type] = furniture
+            cls.__furniture_cache[furniture_type] = furniture
             return furniture
         else:
             return None

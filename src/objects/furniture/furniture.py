@@ -1,0 +1,12 @@
+from dataclasses import dataclass
+
+from src.data.furniture_asset import FurnitureAsset
+from src.data.furniture_layer import FurnitureLayer
+
+@dataclass
+class Furniture:
+    name: str
+    tile_width: int
+    tile_height: int
+    layers: list[FurnitureLayer]
+    all_assets: dict[str, FurnitureAsset]

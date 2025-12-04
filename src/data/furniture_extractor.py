@@ -1,4 +1,5 @@
 import os
+from src.objects.furniture.furniture import Furniture
 from src.data.furniture_layer import FurnitureLayer
 from src.data.furniture_asset import FurnitureAsset
 import definitions
@@ -43,9 +44,12 @@ class FurnitureExtractor:
         if soup.find("asset", {"name": f"{self.furniture_type}_assets"}) is None:
             return False
         
+        if soup.find("asset", {"name": f"{self.furniture_type}_logic"}) is None:
+            return False
+        
         return True
     
-    def extract(self):
+    def extract(self) -> Furniture:
         
         manifest_xml = self.__load_furniture_manifest_xml()
         
@@ -53,11 +57,36 @@ class FurnitureExtractor:
             return None
         
         asset_xml = self.__load_furniture_asset_xml()
+        logic_xml = self.__load_furniture_logic_xml()
+        dimensions = self.__extract_dimension(logic_xml)
         visualization_xml = self.__load_furniture_visualization_xml()
-        
+
         asset_dic = self.__extract_furniture_assets(asset_xml)
         furniture_layers = self.__build_furniture_layers(visualization_xml, asset_dic)
 
+        return Furniture(name=self.furniture_type,
+                         tile_width=int(dimensions["x"]),
+                         tile_height=int(dimensions["y"]),
+                         layers=furniture_layers,
+                         all_assets=asset_dic
+        )
+ 
+    def __extract_dimension(self, logic_xml) -> dict:
+        dimensions_tag = logic_xml.find("dimensions")
+    
+        if dimensions_tag:
+            return {
+                'x': int(dimensions_tag.get('x')),
+                'y': int(dimensions_tag.get('y')),
+                'z': float(dimensions_tag.get('z'))
+            }
+        
+        return {'x': 1, 'y': 1, 'z': 1.0}
+
+    def __load_furniture_logic_xml(self) -> BeautifulSoup:
+        with open(os.path.join(self.path, f"{self.xml_path}{self.furniture_type}_logic.xml"), "r", encoding="utf-8") as file:
+            content = file.read()
+        return BeautifulSoup(content, "xml")
 
     def __build_furniture_layers(self, 
                                  visualization_xml: BeautifulSoup,

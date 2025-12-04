@@ -9,6 +9,9 @@
             <layer id="3" z="500"/>
          </direction>
          <direction id="2">
+            <layer id="1" z="1000"/>
+         </direction>
+         <direction id="2">
             <layer id="0" z="1000"/>
          </direction>
          <direction id="4">

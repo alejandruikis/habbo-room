@@ -16,9 +16,9 @@ FurnitureRegistry.preload_all(["club_sofa"])
 room = Room(screen)
 
 club_sofa = FloorFurniture(
-    roomX=0,
-    roomY=0,
-    roomZ=0,
+    room_x=2,
+    room_y=3,
+    room_z=0,
     direction=2,
     type="club_sofa"
 )
@@ -34,6 +34,9 @@ while running:
     
     # Render
     screen.fill((0, 0, 0))
+
     room.render()
+    club_sofa.render(screen)
+
     pygame.display.flip()
     clock.tick(60)

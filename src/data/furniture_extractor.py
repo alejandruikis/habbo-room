@@ -1,8 +1,11 @@
 import os
+from src.data.furniture_layer import FurnitureLayer
 from src.data.furniture_asset import FurnitureAsset
 import definitions
 from bs4 import BeautifulSoup
 import pygame
+
+from src.utils import xml_layer
 
 class FurnitureExtractor:
     path: str = f"{definitions.ROOT_DIR}/src/data/furnitures/"
@@ -42,7 +45,7 @@ class FurnitureExtractor:
         
         return True
     
-    def extract(self) -> dict[str, FurnitureAsset]:
+    def extract(self):
         
         manifest_xml = self.__load_furniture_manifest_xml()
         
@@ -52,31 +55,99 @@ class FurnitureExtractor:
         asset_xml = self.__load_furniture_asset_xml()
         visualization_xml = self.__load_furniture_visualization_xml()
         
-        assets_dict = {}
+        asset_dic = self.__extract_furniture_assets(asset_xml)
+        furniture_layers = self.__build_furniture_layers(visualization_xml, asset_dic)
+
+
+    def __build_furniture_layers(self, 
+                                 visualization_xml: BeautifulSoup,
+                                 asset_dict: dict[str, FurnitureAsset]) -> list[FurnitureLayer]:
+    
+        viz_64 = visualization_xml.find("visualization", {"size": "64"})
         
+        if not viz_64:
+            return []
+        
+        layer_data = {}
+        
+        layers_tag = viz_64.find("layers")
+        if layers_tag:
+            for layer_tag in layers_tag.find_all("layer"):
+                layer_id = int(layer_tag.get("id"))
+                z_index = int(layer_tag.get("z"))
+                
+                for direction in [0, 2, 4, 6]:
+                    if layer_id not in layer_data:
+                        layer_data[layer_id] = {}
+                    layer_data[layer_id][direction] = z_index
+        
+        directions_tag = viz_64.find("directions")
+        if directions_tag:
+            for direction_tag in directions_tag.find_all("direction"):
+                direction_id = int(direction_tag.get("id"))
+                
+                for layer_tag in direction_tag.find_all("layer"):
+                    layer_id = int(layer_tag.get("id"))
+                    z_index = int(layer_tag.get("z"))
+                    
+                    if layer_id not in layer_data:
+                        layer_data[layer_id] = {}
+                    layer_data[layer_id][direction_id] = z_index
+        
+        furniture_layers = []
+        
+        for layer_id, directions_dict in layer_data.items():
+            z_index = list(directions_dict.values())[0]
+            layer_letter = xml_layer.LAYER_ID_TO_LETTER.get(layer_id, "a")
+            
+            layer_assets = {}
+            
+            for direction in directions_dict.keys():
+                asset_name = f"{self.furniture_type}_64_{layer_letter}_{direction}_0"
+                
+                asset = asset_dict.get(asset_name)
+                
+                if asset:
+                    layer_assets[direction] = asset
+            
+            if layer_assets:
+                furniture_layer = FurnitureLayer(
+                    layer_id=layer_id,
+                    z_index=z_index
+                )
+                furniture_layer.assets = layer_assets
+                furniture_layers.append(furniture_layer)
+        
+        furniture_layers.sort(key=lambda l: l.z_index)
+        
+        return furniture_layers
+    
+    def __extract_furniture_assets(self, asset_xml) -> dict[str, FurnitureAsset]:
+        assets_dict = {}
+
         for asset_tag in asset_xml.find_all("asset"):
             name = asset_tag.get("name")
             flip_h = asset_tag.get("flipH") == "1"
             source = asset_tag.get("source")
             offset_x = int(asset_tag.get("x", "0"))
             offset_y = int(asset_tag.get("y", "0"))
-            
-            png_path = os.path.join(self.path, f"{self.image_path}{name}.png")
             sprite = None
+            png_path = os.path.join(self.path, f"{self.image_path}{name}.png")
             
+
             if os.path.exists(png_path):
                 sprite = pygame.image.load(png_path).convert_alpha()
             
             furniture_asset = FurnitureAsset(
+                name=name,
                 flip_h=flip_h,
                 type=self.furniture_type,
                 offset_x=offset_x,
                 offset_y=offset_y,
-                source_name=source if source else "",
+                source_name=source if source else name,
                 sprite=sprite
             )
             
             assets_dict[name] = furniture_asset
 
         return assets_dict
-    

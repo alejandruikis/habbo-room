@@ -13,7 +13,7 @@ A simple room generator in python where you can create a habbo room.
 
 # Installation & Running
 
-Install dependencies through ![pip](https://pypi.org/project/pip/)
+Install dependencies through [pip](https://pypi.org/project/pip/)
 
 ```
 pip install -r requirements.txt

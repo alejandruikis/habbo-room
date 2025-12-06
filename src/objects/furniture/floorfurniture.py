@@ -30,9 +30,7 @@ class FloorFurniture:
    
         screen_x, screen_y = IsoUtils.grid_to_screen(self.room_x, self.room_y)
         
-        sorted_layers = sorted(self.__furniture_data.layers, key=lambda l: l.z_index)
-        
-        for layer in sorted_layers:
+        for layer in self.__furniture_data.layers:
             asset = layer.assets.get(self.direction)
             
             if not asset:
@@ -43,13 +41,13 @@ class FloorFurniture:
             if not sprite:
                 continue
             
-            render_x, render_y = self._calculate_render_position(
+            render_x, render_y = self.__calculate_render_position(
                 screen_x, screen_y, asset, sprite
             )
             
             surface.blit(sprite, (render_x, render_y))
     
-    def _calculate_render_position(self, screen_x: int, screen_y: int, 
+    def __calculate_render_position(self, screen_x: int, screen_y: int, 
                                    asset: str, 
                                    sprite: pygame.Surface) -> tuple[int, int]:
 

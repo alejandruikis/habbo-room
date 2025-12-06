@@ -1,7 +1,5 @@
-import os
 from src.objects.furniture.floorfurniture import FloorFurniture
 from src.data.furniture_registry import FurnitureRegistry
-import definitions
 import pygame
 from src.objects.room.room import Room
 

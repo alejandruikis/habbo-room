@@ -7,6 +7,10 @@ from typing import List
 
 import pygame_gui
 
+from src.ui.furniture_ui_manager import FurnitureUIManager
+from src.utils.furniture_selector import FurnitureSelector
+from src.utils.ui_utils import SCREEN_HEIGHT, SCREEN_WIDTH
+
 # Init
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
@@ -33,98 +37,86 @@ window_surface = pygame.display.set_mode((800, 600))
 manager = pygame_gui.UIManager((800, 600))
 clock = pygame.time.Clock()
 
-furniture_ui_panel = None
-rotate_button = None
-selected_furniture = None
-last_selected_furniture = None
 
-panel_width = 200
-panel_height = 150
-panel_x = 800 - panel_width - 10 
-panel_y = 560 - panel_height - 10
-
-def update_furniture_ui(furniture):
-    global furniture_ui_panel, rotate_button
-
-    if furniture_ui_panel is not None:
-        furniture_ui_panel.kill()
-        furniture_ui_panel = None
-
-    if rotate_button is not None:
-        rotate_button.kill()
-        rotate_button = None
-
-    if furniture is None:
-        return
-    
-    furniture_ui_panel = pygame_gui.elements.UIPanel(
-        relative_rect=pygame.Rect(panel_x, panel_y, panel_width, panel_height),
-        starting_height=1,
-        manager=manager
-    )
-
-    pygame_gui.elements.UILabel(
-        relative_rect=pygame.Rect((0, 0), (panel_width, 20)),  # volle Panel-Breite, Höhe 20
-        text=furniture.type,
-        container=furniture_ui_panel,
-        manager=manager,
-    )
-
-    icon_surface = pygame.image.load(
-        f"{definitions.ROOT_DIR}/src/data/furnitures/{selected_furniture.type}/images/icon.png"
-    ).convert_alpha()
-
-    orig_w, orig_h = icon_surface.get_size()
-
-    pygame_gui.elements.UIImage(
-            relative_rect=pygame.Rect((40, 30), (orig_w, orig_h)),
-            image_surface=icon_surface,
-            container=furniture_ui_panel,
-            manager=manager
-        ) 
-    
-    rotate_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect(panel_x, panel_y + panel_height + 5, panel_width, 30),  # unter Panel
-            text="Rotate",
-            manager=manager
-    )
-    
-
-
-running = True
-while running:
-    time_delta = clock.tick(60) / 1000.0
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-        manager.process_events(event)
-
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            mouse_pos = event.pos
-            
-            for furniture in added_furnitures:
-                if furniture.get_rect().collidepoint(mouse_pos):
-                    selected_furniture = furniture
-                    break
+class App:
+    def __init__(self):
+        pygame.init()
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        pygame.display.set_caption("Furniture Placement")
         
-        if event.type == pygame_gui.UI_BUTTON_PRESSED:
-            if event.ui_element == rotate_button:
-                if selected_furniture is not None:
-                    selected_furniture.rotate_clockwise()
+        self.clock = pygame.time.Clock()
+        self.ui_manager = pygame_gui.UIManager((SCREEN_WIDTH, SCREEN_HEIGHT))
+        
+        self.__initialize_game_objects()
+        
+        self.furniture_ui = FurnitureUIManager(self.ui_manager)
+        self.selector = FurnitureSelector(self.furnitures)
+        
+        self.running = True
 
-        if selected_furniture != last_selected_furniture:
-            update_furniture_ui(selected_furniture)
-            last_selected_furniture = selected_furniture
 
+    def __initialize_game_objects(self):
+        FurnitureRegistry.preload_all(["club_sofa"])
+        self.room = Room(self.screen)
+        
+        self.furnitures = [
+            Furniture(
+                room_x=2,
+                room_y=3,
+                room_z=0,
+                direction=2,
+                type="club_sofa"
+            )
+        ]
+    
+    def handle_events(self):
+        time_delta = self.clock.tick(60) / 1000.0
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
+            
+            self.ui_manager.process_events(event)
+            
+            if event.type == pygame_gui.UI_BUTTON_PRESSED:
+                self.furniture_ui.handle_button_click(event)
+            
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if not self.__is_click_on_ui(event.pos):
+                    if self.selector.handle_click(event.pos):
+                        self.furniture_ui.update(self.selector.selected)
+        
+        self.ui_manager.update(time_delta)
+    
+    def __is_click_on_ui(self, pos: tuple) -> bool:
+        if self.furniture_ui.panel is not None:
+            panel_rect = self.furniture_ui.panel.get_abs_rect()
+            if panel_rect.collidepoint(pos):
+                return True
+        
+        if self.furniture_ui.rotate_button is not None:
+            button_rect = self.furniture_ui.rotate_button.get_abs_rect()
+            if button_rect.collidepoint(pos):
+                return True
+        
+        return False
 
-    manager.update(time_delta)
+    def render(self):
+        self.screen.fill((0, 0, 0))
+        self.room.render()
+        
+        for furniture in self.furnitures:
+            furniture.render(self.screen)
+        
+        self.ui_manager.draw_ui(self.screen)
+        pygame.display.flip()
+    
+    def run(self):
+        while self.running:
+            self.handle_events()
+            self.render()
+        
+        pygame.quit()
 
-    # Render
-    screen.fill((0, 0, 0))
-    room.render()
-    club_sofa.render(screen)
-
-    manager.draw_ui(window_surface)
-    pygame.display.flip()
+app = App()
+app.run()

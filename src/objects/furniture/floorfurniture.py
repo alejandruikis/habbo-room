@@ -1,6 +1,6 @@
 import pygame
 
-from src.objects.furniture.furniture import Furniture
+from src.objects.furniture.furniture_base import FurnitureBase
 from src.data.furniture_registry import FurnitureRegistry
 from src.objects.room.room_config import RoomConfig
 
@@ -10,14 +10,14 @@ from src.utils.iso_utils import IsoUtils
 
 
 @dataclass
-class FloorFurniture:
+class Furniture:
     room_x: int
     room_y: int
     room_z: int
     direction: int
     type: str
 
-    __furniture_data: Furniture = field(init=False, repr=False)
+    __furniture_data: FurnitureBase = field(init=False, repr=False)
 
     def __post_init__(self):
 

@@ -4,7 +4,7 @@ from src.data.furniture_asset import FurnitureAsset
 from src.data.furniture_layer import FurnitureLayer
 
 @dataclass
-class Furniture:
+class FurnitureBase:
     name: str
     tile_width: int
     tile_height: int

@@ -1,11 +1,11 @@
-from src.objects.furniture.furniture import Furniture
+from src.objects.furniture.furniture_base import FurnitureBase
 from src.data.furniture_extractor import FurnitureExtractor
 
 
 class FurnitureRegistry:
     
     __instance = None
-    __furniture_cache: dict[str, Furniture] = {}
+    __furniture_cache: dict[str, FurnitureBase] = {}
     
     def __new__(cls):
         if cls.__instance is None:
@@ -13,7 +13,7 @@ class FurnitureRegistry:
         return cls.__instance
     
     @classmethod
-    def load_furniture(cls, furniture_type: str) -> Furniture:
+    def load_furniture(cls, furniture_type: str) -> FurnitureBase:
         if furniture_type in cls.__furniture_cache:
             print(f"{furniture_type} from cache")
             return cls.__furniture_cache[furniture_type]

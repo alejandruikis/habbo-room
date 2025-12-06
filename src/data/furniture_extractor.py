@@ -1,5 +1,5 @@
 import os
-from src.objects.furniture.furniture import Furniture
+from src.objects.furniture.furniture_base import FurnitureBase
 from src.data.furniture_layer import FurnitureLayer
 from src.data.furniture_asset import FurnitureAsset
 import definitions
@@ -49,7 +49,7 @@ class FurnitureExtractor:
         
         return True
     
-    def extract(self) -> Furniture:
+    def extract(self) -> FurnitureBase:
         
         manifest_xml = self.__load_furniture_manifest_xml()
         
@@ -67,7 +67,7 @@ class FurnitureExtractor:
         asset_dic = self.__extract_furniture_assets(asset_xml)
         furniture_layers = self.__build_furniture_layers(visualization_xml, asset_dic)
 
-        return Furniture(name=self.furniture_type,
+        return FurnitureBase(name=self.furniture_type,
                          tile_width=int(dimensions["x"]),
                          tile_height=int(dimensions["y"]),
                          layers=furniture_layers,

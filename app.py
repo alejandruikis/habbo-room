@@ -19,7 +19,7 @@ club_sofa = FloorFurniture(
     room_x=2,
     room_y=3,
     room_z=0,
-    direction=6,
+    direction=4,
     type="club_sofa"
 )
 

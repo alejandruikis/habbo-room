@@ -56,11 +56,14 @@ class FurnitureExtractor:
         if not self.__is_manifest_valid(manifest_xml):
             return None
         
+        # Get XML
         asset_xml = self.__load_furniture_asset_xml()
         logic_xml = self.__load_furniture_logic_xml()
-        dimensions = self.__extract_dimension(logic_xml)
         visualization_xml = self.__load_furniture_visualization_xml()
+        dimensions = self.__extract_dimension(logic_xml)
+        
 
+        # Extracting
         asset_dic = self.__extract_furniture_assets(asset_xml)
         furniture_layers = self.__build_furniture_layers(visualization_xml, asset_dic)
 
@@ -97,7 +100,9 @@ class FurnitureExtractor:
         if not viz_64:
             return []
         
-        layer_data = {}
+        layer_count = int(viz_64.get("layerCount", 4))
+        
+        layer_data = {}  # layer_id -> {direction: z_index}
         
         layers_tag = viz_64.find("layers")
         if layers_tag:
@@ -123,6 +128,14 @@ class FurnitureExtractor:
                         layer_data[layer_id] = {}
                     layer_data[layer_id][direction_id] = z_index
         
+        standard_z_index = 1000 
+        
+        for layer_id in range(layer_count):
+            if layer_id not in layer_data:
+                layer_data[layer_id] = {}
+                for direction in [0, 2, 4, 6]:
+                    layer_data[layer_id][direction] = standard_z_index
+        
         furniture_layers = []
         
         for layer_id, directions_dict in layer_data.items():
@@ -133,13 +146,15 @@ class FurnitureExtractor:
             
             for direction in directions_dict.keys():
                 asset_name = f"{self.furniture_type}_64_{layer_letter}_{direction}_0"
-                
                 asset = asset_dict.get(asset_name)
                 
                 if asset:
                     layer_assets[direction] = asset
+                    print(f"  ✓ Layer {layer_id} ({layer_letter}), Direction {direction}, Z={z_index}: {asset_name}")
+                else:
+                    print(f"  ○ Asset nicht gefunden: {asset_name}")
             
-            if layer_assets:
+            if layer_assets or True:
                 furniture_layer = FurnitureLayer(
                     layer_id=layer_id,
                     z_index=z_index

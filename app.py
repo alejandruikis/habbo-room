@@ -104,6 +104,11 @@ class App:
             button_rect = self.furniture_ui.rotate_button.get_abs_rect()
             if button_rect.collidepoint(pos):
                 return True
+            
+        if self.furniture_ui.use_button is not None:
+            button_rect = self.furniture_ui.use_button.get_abs_rect()
+            if button_rect.collidepoint(pos):
+                return True
         
         return False
 

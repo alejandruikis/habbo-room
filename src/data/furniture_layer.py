@@ -7,7 +7,7 @@ class FurnitureLayer:
     layer_id: int
     type: str
     z_index: int
-    assets: dict[int, FurnitureAsset] = field(default_factory=dict) # int -> direction
+    assets: dict[int, list[FurnitureAsset]] = field(default_factory=dict) # int -> direction
 
     # ink: str = None
     # alpha: int = None

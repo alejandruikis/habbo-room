@@ -21,36 +21,62 @@ class Furniture:
     screen_x: int = field(init=False)
     screen_y: int = field(init=False)
 
+    animation_state: bool = field(init=False)
+
     __furniture_data: FurnitureBase = field(init=False, repr=False)
 
     def __post_init__(self):
         print(f"Furniture Class {self.type} created")
         self.__furniture_data = FurnitureRegistry.load_furniture(self.type)
-        
+        self.animation_state = False
+
         if not self.__furniture_data:
             raise ValueError(f"Can't load Furniture-Type: '{self.type}' ")
-        
+    
+
         self.screen_x, self.screen_y = IsoUtils.grid_to_screen(self.room_x, self.room_y)
 
     def render(self, surface: pygame.Surface):
-   
+        current_animation_frame = 0
+        
         for layer in self.__furniture_data.layers:
-            asset = layer.assets.get(self.direction)
+            asset_list = layer.assets.get(self.direction)
+            
+            if not asset_list:
+                continue
+            
+            asset = next((a for a in asset_list if a.frame == current_animation_frame), None)
             
             if not asset:
-                continue
+                asset = next((a for a in asset_list if a.frame == 0), None)
+            
+            if not asset:
+                asset = asset_list[0]
             
             sprite = asset.get_sprite(self.__furniture_data.all_assets)
-
-            if not sprite:
-                continue
-
-            render_x, render_y = self.__calculate_render_position(
-                self.screen_x, self.screen_y, asset, sprite
-            )
             
-            surface.blit(sprite, (render_x, render_y))
+            if sprite:
+                render_x, render_y = self.__calculate_render_position(
+                    self.screen_x, self.screen_y, asset, sprite)
+                
+                surface.blit(sprite, (render_x, render_y))
     
+    def set_animation_state(self):
+        self.animation_state = not(self.animation_state)
+
+    def change_direction(self):
+        dirs = self.__furniture_data.possible_directions
+
+        try:
+            idx = dirs.index(self.direction)
+        except ValueError:
+            self.direction = dirs[0]
+            return
+
+        next_idx = (idx + 1) % len(dirs)
+        self.direction = dirs[next_idx]
+
+
     def __calculate_render_position(self, screen_x: int, screen_y: int, 
                                    asset: FurnitureAsset, 
                                    sprite: pygame.Surface) -> tuple[int, int]:
@@ -93,18 +119,7 @@ class Furniture:
         
         return tiles
     
-    def change_direction(self):
-        dirs = self.__furniture_data.possible_directions
-
-        try:
-            idx = dirs.index(self.direction)
-        except ValueError:
-            self.direction = dirs[0]
-            return
-
-        next_idx = (idx + 1) % len(dirs)
-        self.direction = dirs[next_idx]
-
+    
     
     def get_rect(self) -> pygame.Rect:
         min_x = float('inf')

@@ -12,6 +12,7 @@ class FurnitureUIManager:
         self.manager = manager
         self.panel: Optional[pygame_gui.elements.UIPanel] = None
         self.rotate_button: Optional[pygame_gui.elements.UIButton] = None
+        self.use_button: Optional[pygame_gui.elements.UIButton] = None
         self.current_furniture: Optional[Furniture] = None
         
         self.panel_x = SCREEN_WIDTH - PANEL_WIDTH - PANEL_MARGIN_X
@@ -29,6 +30,7 @@ class FurnitureUIManager:
         
         self.__create_panel(furniture)
         self.__create_rotate_button()
+        self.__create_use_button()
     
     def __clear_ui(self):
         if self.panel is not None:
@@ -37,6 +39,9 @@ class FurnitureUIManager:
         if self.rotate_button is not None:
             self.rotate_button.kill()
             self.rotate_button = None
+        if self.use_button is not None:
+            self.use_button.kill()
+            self.use_button = None
     
     def __create_panel(self, furniture: Furniture):
         self.panel = pygame_gui.elements.UIPanel(
@@ -78,14 +83,30 @@ class FurnitureUIManager:
         self.rotate_button = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
                 self.panel_x, button_y, 
-                PANEL_WIDTH, 30
+                PANEL_WIDTH / 2, 30
             ),
             text="Rotate",
             manager=self.manager
         )
     
+    def __create_use_button(self):
+        button_y = self.panel_y + PANEL_HEIGHT + 5
+        self.use_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect(
+                self.panel_x + 100, button_y, 
+                PANEL_WIDTH / 2, 30
+            ),
+            text="Use",
+            manager=self.manager
+        )
+
     def handle_button_click(self, event) -> bool:
         if event.ui_element == self.rotate_button and self.current_furniture:
             self.current_furniture.change_direction()
             return True
+        
+        if event.ui_element == self.use_button and self.current_furniture:
+            self.current_furniture.set_animation_state()
+            return True
+
         return False

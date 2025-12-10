@@ -10,6 +10,7 @@ class FurnitureAsset:
     offset_y: int = 0
     source_name: str = ""
     sprite: pygame.Surface = None
+    frame: int = 0
     
     def get_sprite(self, all_assets: dict) -> pygame.Surface:
         if self.sprite:

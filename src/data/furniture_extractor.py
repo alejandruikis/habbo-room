@@ -1,4 +1,6 @@
 import os
+import pprint
+import re
 from typing import List
 from src.objects.furniture.furniture_base import FurnitureBase
 from src.data.furniture_layer import FurnitureLayer
@@ -135,13 +137,16 @@ class FurnitureExtractor:
             layer_assets = {}
             
             for direction in directions_dict.keys():
-                asset_name = f"{self.furniture_type}_64_{layer_letter}_{direction}_0" # non animation sprites
-                asset = asset_dict.get(asset_name)
-                
-                if asset:
-                    layer_assets[direction] = asset
+                layer_assets[direction] = []
+
+                for i in range(1): # collect animation frame assets
+                    asset_name = f"{self.furniture_type}_64_{layer_letter}_{direction}_{i}"
+                    asset = asset_dict.get(asset_name)
+
+                    if asset:
+                        layer_assets[direction].append(asset)
                     
-            
+
             furniture_layer = FurnitureLayer(
                 layer_id=layer_id,
                 type=self.furniture_type,
@@ -152,7 +157,7 @@ class FurnitureExtractor:
             furniture_layers.append(furniture_layer)
         
         furniture_layers.sort(key=lambda l: l.z_index)
-        
+        #pprint.pp(furniture_layers)
         return furniture_layers
     
     def __extract_layer_data(self, viz_64) -> dict:
@@ -214,6 +219,8 @@ class FurnitureExtractor:
             sprite = None
             png_path = os.path.join(self.path, f"{self.image_path}{name}.png")
             
+            regex = re.search(r'_(\d+)$', name or "")
+            frame = int(regex.group(1)) if regex else 0
 
             if os.path.exists(png_path):
                 sprite = pygame.image.load(png_path).convert_alpha()
@@ -225,9 +232,10 @@ class FurnitureExtractor:
                 offset_x=offset_x,
                 offset_y=offset_y,
                 source_name=source if source else name,
-                sprite=sprite
+                sprite=sprite,
+                frame=frame
             )
-            
+
             assets_dict[name] = furniture_asset
 
         return assets_dict

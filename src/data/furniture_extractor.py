@@ -114,53 +114,17 @@ class FurnitureExtractor:
 
     def __build_furniture_layers(self, 
                                  visualization_xml: BeautifulSoup,
-                                 asset_dict: dict[str, FurnitureAsset]) -> list[FurnitureLayer]:
+                                 asset_dict: dict[str, FurnitureAsset],
+                                 is_multistate: bool = False) -> list[FurnitureLayer]:
     
         viz_64 = visualization_xml.find("visualization", {"size": "64"})
         
         if not viz_64:
             return []
         
-        layer_count = int(viz_64.get("layerCount"))
-        
-        layer_data = {}  # layer_id -> {direction: z_index}
-        z_index = 0
-
-        layers_tag = viz_64.find("layers")
-        if layers_tag:
-            for layer_tag in layers_tag.find_all("layer"):
-                layer_id = int(layer_tag.get("id"))
-
-                if(layer_tag.get("z") is not None):
-                    z_index = int(layer_tag.get("z"))
-                
-                for direction in self.actual_furniture_directions:
-                    if layer_id not in layer_data:
-                        layer_data[layer_id] = {}
-                    layer_data[layer_id][direction] = z_index
-
-        directions_tag = viz_64.find("directions")
-        if directions_tag:
-            for direction_tag in directions_tag.find_all("direction"):
-                direction_id = int(direction_tag.get("id"))
-                
-                for layer_tag in direction_tag.find_all("layer"):
-                    layer_id = int(layer_tag.get("id"))
-                    z_index = int(layer_tag.get("z"))
-                    
-                    if layer_id not in layer_data:
-                        layer_data[layer_id] = {}
-                    layer_data[layer_id][direction_id] = z_index
-        
-        standard_z_index = 0 
-        
-        
-
-        for layer_id in range(layer_count):
-            if layer_id not in layer_data:
-                layer_data[layer_id] = {}
-                for direction in self.actual_furniture_directions:
-                    layer_data[layer_id][direction] = standard_z_index
+        layer_data = self.__extract_layer_data(viz_64)
+        layer_data = self.__extract_directions_data(viz_64, layer_data)
+        layer_data = self.__extract_layer_z_index(viz_64, layer_data)
         
         furniture_layers = []
         
@@ -177,18 +141,67 @@ class FurnitureExtractor:
                 if asset:
                     layer_assets[direction] = asset
                     
-            if layer_assets or True:
-                furniture_layer = FurnitureLayer(
-                    layer_id=layer_id,
-                    z_index=z_index
-                )
-                furniture_layer.assets = layer_assets
-                furniture_layers.append(furniture_layer)
+            
+            furniture_layer = FurnitureLayer(
+                layer_id=layer_id,
+                type=self.furniture_type,
+                z_index=z_index,
+                assets=layer_assets
+            )
+            
+            furniture_layers.append(furniture_layer)
         
         furniture_layers.sort(key=lambda l: l.z_index)
         
         return furniture_layers
     
+    def __extract_layer_data(self, viz_64) -> dict:
+        layer_data = {}
+        z_index = 0
+
+        layers_tag = viz_64.find("layers")
+        if layers_tag:
+            for layer_tag in layers_tag.find_all("layer"):
+                layer_id = int(layer_tag.get("id"))
+
+                if(layer_tag.get("z") is not None):
+                    z_index = int(layer_tag.get("z"))
+                
+                for direction in self.actual_furniture_directions:
+                    if layer_id not in layer_data:
+                        layer_data[layer_id] = {}
+                    layer_data[layer_id][direction] = z_index
+
+        return layer_data
+
+    def __extract_directions_data(self, viz_64, layer_data) -> dict:
+        directions_tag = viz_64.find("directions")
+        if directions_tag:
+            for direction_tag in directions_tag.find_all("direction"):
+                direction_id = int(direction_tag.get("id"))
+                
+                for layer_tag in direction_tag.find_all("layer"):
+                    layer_id = int(layer_tag.get("id"))
+                    z_index = int(layer_tag.get("z"))
+                    
+                    if layer_id not in layer_data:
+                        layer_data[layer_id] = {}
+                    layer_data[layer_id][direction_id] = z_index
+
+        return layer_data
+
+    def __extract_layer_z_index(self, viz_64, layer_data) -> dict:
+        z_index = 0 
+        layer_count = int(viz_64.get("layerCount"))
+
+        for layer_id in range(layer_count):
+            if layer_id not in layer_data:
+                layer_data[layer_id] = {}
+                for direction in self.actual_furniture_directions:
+                    layer_data[layer_id][direction] = z_index
+
+        return layer_data
+
     def __extract_furniture_assets(self, asset_xml) -> dict[str, FurnitureAsset]:
         assets_dict = {}
 

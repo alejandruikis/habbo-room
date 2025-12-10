@@ -1,16 +1,17 @@
 from src.data.furniture_asset import FurnitureAsset
 from src.utils.xml_layer import get_layer_id_from_letter
+from dataclasses import dataclass, field
 
+@dataclass
 class FurnitureLayer:
     layer_id: int
     type: str
     z_index: int
-    assets: dict[int, FurnitureAsset] # int -> direction
+    assets: dict[int, FurnitureAsset] = field(default_factory=dict) # int -> direction
 
-    def __init__(self, layer_id: int, z_index: int = 0):
-        self.layer_id = layer_id
-        self.z_index = z_index
-        self.assets = {}
+    # ink: str = None
+    # alpha: int = None
+    # ignore_mouse: bool = False
 
     @staticmethod
     def get_layer_id_from_letter(letter: str) -> int:

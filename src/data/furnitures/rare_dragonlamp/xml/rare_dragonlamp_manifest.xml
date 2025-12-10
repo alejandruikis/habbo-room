@@ -23,21 +23,6 @@
          <asset name="rare_dragonlamp_64_sd_4_0" mimeType="image/png"/>
          <asset name="rare_dragonlamp_icon_a" mimeType="image/png"/>
          <asset name="rare_dragonlamp_icon_b" mimeType="image/png"/>
-         <asset name="rare_dragonlamp_32_a_4_0" mimeType="image/png"/>
-         <asset name="rare_dragonlamp_32_b_4_0" mimeType="image/png"/>
-         <asset name="rare_dragonlamp_32_c_4_0" mimeType="image/png"/>
-         <asset name="rare_dragonlamp_32_c_4_1" mimeType="image/png"/>
-         <asset name="rare_dragonlamp_32_d_4_0" mimeType="image/png"/>
-         <asset name="rare_dragonlamp_32_e_4_0" mimeType="image/png"/>
-         <asset name="rare_dragonlamp_32_e_4_1" mimeType="image/png"/>
-         <asset name="rare_dragonlamp_32_f_4_0" mimeType="image/png"/>
-         <asset name="rare_dragonlamp_32_f_4_1" mimeType="image/png"/>
-         <asset name="rare_dragonlamp_32_f_4_2" mimeType="image/png"/>
-         <asset name="rare_dragonlamp_32_f_4_3" mimeType="image/png"/>
-         <asset name="rare_dragonlamp_32_f_4_4" mimeType="image/png"/>
-         <asset name="rare_dragonlamp_32_g_4_0" mimeType="image/png"/>
-         <asset name="rare_dragonlamp_32_g_4_1" mimeType="image/png"/>
-         <asset name="rare_dragonlamp_32_sd_4_0" mimeType="image/png"/>
       </assets>
    </library>
 </manifest>

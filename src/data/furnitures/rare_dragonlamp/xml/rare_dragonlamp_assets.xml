@@ -32,34 +32,4 @@
    <asset name="rare_dragonlamp_64_sd_4_0" x="29" y="3"/>
    <asset name="rare_dragonlamp_icon_a" x="13" y="15"/>
    <asset name="rare_dragonlamp_icon_b" x="9" y="15"/>
-   <asset name="rare_dragonlamp_32_a_2_0" flipH="1" source="rare_dragonlamp_32_a_4_0" x="14" y="6"/>
-   <asset name="rare_dragonlamp_32_a_4_0" x="14" y="6"/>
-   <asset name="rare_dragonlamp_32_b_2_0" flipH="1" source="rare_dragonlamp_32_b_4_0" x="9" y="18"/>
-   <asset name="rare_dragonlamp_32_b_4_0" x="9" y="18"/>
-   <asset name="rare_dragonlamp_32_c_2_0" flipH="1" source="rare_dragonlamp_32_c_4_0" x="11" y="29"/>
-   <asset name="rare_dragonlamp_32_c_2_1" flipH="1" source="rare_dragonlamp_32_c_4_1" x="4" y="34"/>
-   <asset name="rare_dragonlamp_32_c_4_0" x="11" y="29"/>
-   <asset name="rare_dragonlamp_32_c_4_1" x="4" y="34"/>
-   <asset name="rare_dragonlamp_32_d_2_0" flipH="1" source="rare_dragonlamp_32_d_4_0" x="7" y="16"/>
-   <asset name="rare_dragonlamp_32_d_4_0" x="7" y="16"/>
-   <asset name="rare_dragonlamp_32_e_2_0" flipH="1" source="rare_dragonlamp_32_e_4_0" x="10" y="28"/>
-   <asset name="rare_dragonlamp_32_e_2_1" flipH="1" source="rare_dragonlamp_32_e_4_1" x="4" y="33"/>
-   <asset name="rare_dragonlamp_32_e_4_0" x="10" y="28"/>
-   <asset name="rare_dragonlamp_32_e_4_1" x="4" y="33"/>
-   <asset name="rare_dragonlamp_32_f_2_0" flipH="1" source="rare_dragonlamp_32_f_4_0" x="14" y="-2"/>
-   <asset name="rare_dragonlamp_32_f_2_1" flipH="1" source="rare_dragonlamp_32_f_4_1" x="3" y="46"/>
-   <asset name="rare_dragonlamp_32_f_2_2" flipH="1" source="rare_dragonlamp_32_f_4_2" x="3" y="44"/>
-   <asset name="rare_dragonlamp_32_f_2_3" flipH="1" source="rare_dragonlamp_32_f_4_3" x="4" y="45"/>
-   <asset name="rare_dragonlamp_32_f_2_4" flipH="1" source="rare_dragonlamp_32_f_4_4" x="4" y="46"/>
-   <asset name="rare_dragonlamp_32_f_4_0" x="14" y="-2"/>
-   <asset name="rare_dragonlamp_32_f_4_1" x="3" y="46"/>
-   <asset name="rare_dragonlamp_32_f_4_2" x="3" y="44"/>
-   <asset name="rare_dragonlamp_32_f_4_3" x="4" y="45"/>
-   <asset name="rare_dragonlamp_32_f_4_4" x="4" y="46"/>
-   <asset name="rare_dragonlamp_32_g_2_0" flipH="1" source="rare_dragonlamp_32_g_4_0" x="14" y="-2"/>
-   <asset name="rare_dragonlamp_32_g_2_1" flipH="1" source="rare_dragonlamp_32_g_4_1" x="13" y="57"/>
-   <asset name="rare_dragonlamp_32_g_4_0" x="14" y="-2"/>
-   <asset name="rare_dragonlamp_32_g_4_1" x="13" y="57"/>
-   <asset name="rare_dragonlamp_32_sd_2_0" flipH="1" source="rare_dragonlamp_32_sd_4_0" x="15" y="1"/>
-   <asset name="rare_dragonlamp_32_sd_4_0" x="15" y="1"/>
 </assets>

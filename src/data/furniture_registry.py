@@ -18,11 +18,9 @@ class FurnitureRegistry:
             print(f"{furniture_type} from cache")
             return cls.__furniture_cache[furniture_type]
         
-        print(f"Create new furniture: {furniture_type}")
-
         extractor = FurnitureExtractor(furniture_type)
         furniture = extractor.extract()
-
+        
         if furniture:
             cls.__furniture_cache[furniture_type] = furniture
             return furniture

@@ -20,18 +20,6 @@ FurnitureRegistry.preload_all(["club_sofa"])
 
 room = Room(screen)
 
-added_furnitures: List[Furniture] = []
-
-club_sofa = Furniture(
-    room_x=2,
-    room_y=3,
-    room_z=0,
-    direction=2,
-    type="club_sofa"
-)
-
-added_furnitures.append(club_sofa)
-
 window_surface = pygame.display.set_mode((800, 600))
 
 manager = pygame_gui.UIManager((800, 600))
@@ -39,6 +27,9 @@ clock = pygame.time.Clock()
 
 
 class App:
+    added_furnitures: List[Furniture] = []
+    furnitures: List[Furniture]
+
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -56,7 +47,6 @@ class App:
 
 
     def __initialize_game_objects(self):
-        FurnitureRegistry.preload_all(["club_sofa"])
         self.room = Room(self.screen)
         
         self.furnitures = [
@@ -66,6 +56,14 @@ class App:
                 room_z=0,
                 direction=2,
                 type="club_sofa"
+            ),
+
+            Furniture(
+                room_x=4,
+                room_y=3,
+                room_z=0,
+                direction=2,
+                type="nft_md_limukaappi"
             )
         ]
     

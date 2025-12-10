@@ -1,4 +1,5 @@
 import os
+from typing import List
 from src.objects.furniture.furniture_base import FurnitureBase
 from src.data.furniture_layer import FurnitureLayer
 from src.data.furniture_asset import FurnitureAsset
@@ -12,6 +13,8 @@ class FurnitureExtractor:
     path: str = f"{definitions.ROOT_DIR}/src/data/furnitures/"
     xml_path: str = "xml/"
     image_path: str = "images/"
+    possible_furniture_directions: List[int] = [2, 4, 6, 0]
+    actual_furniture_directions: List[int] = []
     
     def __init__(self, furniture_type: str):
         self.furniture_type = furniture_type
@@ -57,8 +60,13 @@ class FurnitureExtractor:
             return None
         
         # Get XML
-        asset_xml = self.__load_furniture_asset_xml()
         logic_xml = self.__load_furniture_logic_xml()
+        self.actual_furniture_directions = self.__extract_possible_directions(logic_xml)
+
+        if len(self.actual_furniture_directions) == 0:
+            print(f"WARNING: Furniture '{self.furniture_type}' does not have any direction!")
+
+        asset_xml = self.__load_furniture_asset_xml()
         visualization_xml = self.__load_furniture_visualization_xml()
         dimensions = self.__extract_dimension(logic_xml)
         
@@ -73,6 +81,18 @@ class FurnitureExtractor:
                          layers=furniture_layers,
                          all_assets=asset_dic
         )
+    
+    def __extract_possible_directions(self, logic_xml) -> List[int]:
+
+        directions_tag = logic_xml.find("directions")
+        if directions_tag:
+                direction_tags = directions_tag.find_all("direction")
+                self.directions_count = len(direction_tags)
+
+        direction_count = self.directions_count if self.directions_count > 0 else len(self.possible_furniture_directions)
+        direction_count = min(direction_count, len(self.possible_furniture_directions))
+        
+        return self.possible_furniture_directions[:direction_count]
  
     def __extract_dimension(self, logic_xml) -> dict:
         dimensions_tag = logic_xml.find("dimensions")
@@ -100,21 +120,24 @@ class FurnitureExtractor:
         if not viz_64:
             return []
         
-        layer_count = int(viz_64.get("layerCount", 4))
+        layer_count = int(viz_64.get("layerCount"))
         
         layer_data = {}  # layer_id -> {direction: z_index}
-        
+        z_index = 0
+
         layers_tag = viz_64.find("layers")
         if layers_tag:
             for layer_tag in layers_tag.find_all("layer"):
                 layer_id = int(layer_tag.get("id"))
-                z_index = int(layer_tag.get("z"))
+
+                if(layer_tag.get("z") is not None):
+                    z_index = int(layer_tag.get("z"))
                 
-                for direction in [0, 2, 4, 6]:
+                for direction in self.actual_furniture_directions:
                     if layer_id not in layer_data:
                         layer_data[layer_id] = {}
                     layer_data[layer_id][direction] = z_index
-        
+
         directions_tag = viz_64.find("directions")
         if directions_tag:
             for direction_tag in directions_tag.find_all("direction"):
@@ -130,10 +153,12 @@ class FurnitureExtractor:
         
         standard_z_index = 1000 
         
+        
+
         for layer_id in range(layer_count):
             if layer_id not in layer_data:
                 layer_data[layer_id] = {}
-                for direction in [0, 2, 4, 6]:
+                for direction in self.actual_furniture_directions:
                     layer_data[layer_id][direction] = standard_z_index
         
         furniture_layers = []
@@ -145,7 +170,7 @@ class FurnitureExtractor:
             layer_assets = {}
             
             for direction in directions_dict.keys():
-                asset_name = f"{self.furniture_type}_64_{layer_letter}_{direction}_0"
+                asset_name = f"{self.furniture_type}_64_{layer_letter}_{direction}_0" # non animation sprites
                 asset = asset_dict.get(asset_name)
                 
                 if asset:

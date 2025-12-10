@@ -24,7 +24,7 @@ class Furniture:
     __furniture_data: FurnitureBase = field(init=False, repr=False)
 
     def __post_init__(self):
-
+        print(f"Furniture Class {self.type} created")
         self.__furniture_data = FurnitureRegistry.load_furniture(self.type)
         
         if not self.__furniture_data:
@@ -45,14 +45,14 @@ class Furniture:
             if not sprite:
                 continue
             
+            if self.type == "nft_md_limukaapp":
+                print("Suc")
+
             render_x, render_y = self.__calculate_render_position(
                 self.screen_x, self.screen_y, asset, sprite
             )
             
             surface.blit(sprite, (render_x, render_y))
-
-    def change_direction():
-        pass
     
     def __calculate_render_position(self, screen_x: int, screen_y: int, 
                                    asset: FurnitureAsset, 
